@@ -2,7 +2,7 @@ import io, { Manager } from 'socket.io-client';
 
 console.log('Running...');
 
-const manager = new Manager('http://://localhost:3000', {
+const manager = new Manager('ws://localhost:3000', {
   transports: ['websocket'],
   autoConnect: true,
 });

@@ -13,17 +13,14 @@ import { MessagesService } from '../messages/messages.service';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: '*', // Falha de segurança - Motivo: Todos os endereços podem acessar este serviço
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private rooms: Map<string, Set<Socket>> = new Map();
 
-  constructor(
-    private readonly messagesService: MessagesService,
- 
-  ) {}
+  constructor(private readonly messagesService: MessagesService) {}
 
   handleConnection(client: Socket) {
     console.log('Cliente conectado:', client.id);
@@ -42,8 +39,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!this.rooms.has(roomName)) {
       this.rooms.set(roomName, new Set());
     }
+
     this.rooms.get(roomName).add(client);
+
     client.join(roomName);
+
     this.server
       .to(roomName)
       .emit('message', { sender: 'Sistema', message: `${client.id} entrou na sala ${roomName}` });
